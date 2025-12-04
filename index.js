@@ -3,6 +3,7 @@ const app = express()
 require('dotenv').config()
 const cors = require('cors')
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const admin = require("firebase-admin");
 const port = 3000
 
 //MIDLEWARE 
@@ -22,6 +23,16 @@ const client = new MongoClient(uri, {
 
 
 
+//! Firebase sdk code start
+const serviceAccount = require("./go-fly-firebase-adminsdk.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+//! Firebase sdk code end
+
+
+
 
 //! Firebase Admin verfy Code Start 
 const firebaseVerify = async(req,res,next) => {
@@ -34,7 +45,9 @@ const firebaseVerify = async(req,res,next) => {
   }
 
   try{
-    
+    const decode = await admin.auth().verifyIdToken(token)
+    req.tokenEmail = decode.email;
+    next()
   }
   catch(er) {
 
