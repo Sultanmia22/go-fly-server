@@ -23,12 +23,58 @@ const client = new MongoClient(uri, {
 
 
 
+//! Firebase Admin verfy Code Start 
+const firebaseVerify = async(req,res,next) => {
+
+  const accessToken = req?.headers?.authorization;
+  const token = accessToken.split(' ')[1]
+
+  if(!token){
+    return res.status(401).json({message:'Unauthorize Access!'})
+  }
+
+  try{
+    
+  }
+  catch(er) {
+
+  }
+
+}
+//! Firebase Admin verfy Code Start 
+
+
+
 async function run() {
   try {
    
     await client.connect();
    
+    const db = client.db('go-fly-DB')
+    const userCollection = db.collection('users')
 
+    //! All USER RELETED API START
+    //insert user data after from login and register
+    app.post('/user',firebaseVerify, async(req,res) => {
+      try{
+        const userData = req.body;
+        userData.role = 'user';
+        userData.createdAt = new Date().toLocaleDateString('en-BD') 
+
+        const email = userData.email
+        const exsitingUser = await userCollection.findOne({email})
+        if(exsitingUser){
+          return res.status(409).json({message: 'User Already Exsits'})
+        }
+
+        const result = await userCollection.insertOne(userData)
+        res.json(result)
+      }
+      catch(er){
+        console.log(er)
+      }
+    }); 
+     //! All USER RELETED API END
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
