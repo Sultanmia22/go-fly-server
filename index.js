@@ -65,6 +65,7 @@ async function run() {
    
     const db = client.db('go-fly-DB')
     const userCollection = db.collection('users')
+    const parcelCollection = db.collection('parcel')
 
     //! All USER RELETED API START
     //insert user data after from login and register
@@ -87,6 +88,18 @@ async function run() {
         console.log(er)
       }
     }); 
+
+
+
+    // send percel data insert database 
+    app.post('/parcel',async(req,res) => {
+      const parcelData = req.body;
+
+      const result = await parcelCollection.insertOne(parcelData);
+      res.json(result);
+    })
+
+
      //! All USER RELETED API END
 
     await client.db("admin").command({ ping: 1 });
